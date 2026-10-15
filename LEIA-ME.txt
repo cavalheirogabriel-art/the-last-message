@@ -1,0 +1,23 @@
+THE LAST MESSAGE — PWA
+
+ARQUIVOS
+- index.html: jogo
+- manifest.json: configuração do aplicativo
+- sw.js: funcionamento offline/cache
+- icon.svg: ícone do aplicativo
+
+COMO TESTAR NO VS CODE
+1. Abra esta pasta no VS Code.
+2. Instale a extensão Live Server.
+3. Clique com o botão direito em index.html.
+4. Escolha "Open with Live Server".
+5. Abra o endereço pelo celular na mesma rede, se necessário.
+
+COMO INSTALAR NO CELULAR
+Depois de publicar o jogo em um endereço HTTPS:
+- Android/Chrome: menu do navegador > "Instalar aplicativo" ou "Adicionar à tela inicial".
+- iPhone/Safari: Compartilhar > "Adicionar à Tela de Início".
+
+IMPORTANTE
+Para a instalação PWA funcionar corretamente, o site deve estar publicado em HTTPS
+(exceção: localhost para testes).

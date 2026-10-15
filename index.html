@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>THE LAST MESSAGE — Chapter 2</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#07080c;color:#eee;font-family:Inter,system-ui,Arial,sans-serif;overflow-x:hidden}
+button{font:inherit}.app{min-height:100vh;background:radial-gradient(circle at 50% -10%,#242938 0,#0b0d13 38%,#05060a 100%)}
+header{position:sticky;top:0;z-index:20;background:#0b0d13e8;border-bottom:1px solid #282d3a;backdrop-filter:blur(12px);padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:900;letter-spacing:3px}.logo span{color:#9e78ff}.status{font-size:12px;color:#9da5b5}.wrap{max-width:1100px;margin:auto;padding:20px}
+.screen{display:none}.screen.active{display:block}.hero{min-height:82vh;display:grid;place-items:center;text-align:center}.heroCard{max-width:850px}
+.kicker{letter-spacing:5px;color:#9e78ff;font-size:12px}.title{font-size:clamp(44px,9vw,92px);line-height:.9;margin:18px 0;font-weight:950;letter-spacing:-4px}
+.subtitle{color:#aab0bd;max-width:650px;margin:auto;line-height:1.7}.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:28px}
+.btn{border:1px solid #343949;background:#141824;color:#fff;border-radius:12px;padding:13px 18px;cursor:pointer}.btn.primary{background:#8f63ff;border-color:#8f63ff}.btn:hover{filter:brightness(1.15)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}.card{background:#0e1119;border:1px solid #282d3a;border-radius:16px;padding:16px;box-shadow:0 12px 40px #0005}.wide{grid-column:span 8}.side{grid-column:span 4}
+@media(max-width:800px){.wide,.side{grid-column:1/-1}}
+.scene{height:330px;border-radius:14px;overflow:hidden;position:relative;background:#090b10;border:1px solid #2c3140}.scene svg{width:100%;height:100%;display:block}.sceneLabel{position:absolute;left:12px;bottom:12px;background:#05060acc;border:1px solid #33394a;border-radius:9px;padding:8px 10px;font-size:12px}
+.tabs{display:flex;gap:8px;overflow:auto;margin:14px 0}.tab{white-space:nowrap;padding:9px 12px;border:1px solid #2b3040;background:#10131b;color:#9ea6b5;border-radius:999px;cursor:pointer}.tab.on{color:#fff;border-color:#8f63ff}
+.list{display:grid;gap:9px}.clue{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid #292e3b;border-radius:12px;background:#0c0f16;cursor:pointer}.clue.lock{opacity:.45;cursor:not-allowed}.icon{width:42px;height:42px;border-radius:10px;display:grid;place-items:center;background:#171b27;font-size:21px}
+.chat{height:430px;overflow:auto;padding:14px;background:linear-gradient(#090b10,#0b0e15);border:1px solid #292e3b;border-radius:14px}.bubble{max-width:82%;padding:11px 13px;margin:8px 0;border-radius:14px;line-height:1.45}.them{background:#171b25;border-bottom-left-radius:4px}.me{margin-left:auto;background:#6844b9;border-bottom-right-radius:4px}.meta{font-size:10px;color:#777f90;margin-top:4px}
+.choices{display:grid;gap:9px;margin-top:12px}.choice{text-align:left;border:1px solid #33394a;background:#111520;color:#fff;padding:12px;border-radius:11px;cursor:pointer}.choice:hover{border-color:#8f63ff}
+.bar{height:8px;background:#171b24;border-radius:99px;overflow:hidden}.fill{height:100%;background:#8f63ff;width:50%;transition:.4s}
+.stat{display:flex;justify-content:space-between;font-size:12px;color:#9ea6b5;margin:7px 0}
+.modal{position:fixed;inset:0;background:#000b;display:none;place-items:center;z-index:50;padding:18px}.modal.show{display:grid}.modalBox{max-width:700px;width:100%;background:#0d1018;border:1px solid #343949;border-radius:18px;padding:18px}.evidenceImg{border-radius:12px;overflow:hidden;border:1px solid #303647;margin-bottom:14px}.evidenceImg svg{width:100%;display:block}
+.timeline{position:relative;padding-left:24px}.event{border-left:2px solid #353a49;padding:0 0 18px 16px;position:relative}.event:before{content:"";position:absolute;left:-6px;top:2px;width:10px;height:10px;border-radius:50%;background:#8f63ff}
+.toast{position:fixed;right:18px;bottom:18px;background:#111520;border:1px solid #353a49;border-radius:12px;padding:12px 15px;z-index:80;display:none}.toast.show{display:block}
+footer{text-align:center;color:#596170;font-size:11px;padding:30px}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="logo">THE LAST <span>MESSAGE</span></div><div class="status" id="saveStatus">AUTO-SAVE • 0%</div></header>
+
+<section id="title" class="screen active"><div class="hero"><div class="heroCard">
+<div class="kicker">MISTÉRIO • INVESTIGAÇÃO • SUSPENSE</div>
+<div class="title">THE LAST<br>MESSAGE</div>
+<p class="subtitle">Uma investigação interativa sobre o desaparecimento de Noah. Examine imagens, ouça gravações, conecte pistas e decida em quem confiar.</p>
+<div class="actions"><button class="btn primary" onclick="startGame()">INICIAR INVESTIGAÇÃO</button><button class="btn" onclick="showHelp()">COMO JOGAR</button><button class="btn" onclick="loadGame()">CARREGAR</button></div>
+</div></div></section>
+
+<section id="game" class="screen"><div class="wrap">
+<div class="grid">
+<div class="card wide">
+<div class="scene" id="scene"></div>
+<div class="tabs">
+<button class="tab on" onclick="tab('evidence',this)">Evidências</button>
+<button class="tab" onclick="tab('chat',this)">Mensagens</button>
+<button class="tab" onclick="tab('timeline',this)">Linha do tempo</button>
+</div>
+<div id="evidencePanel"></div><div id="chatPanel" style="display:none"></div><div id="timelinePanel" style="display:none"></div>
+</div>
+<div class="card side">
+<h3>PAINEL DA INVESTIGAÇÃO</h3>
+<div class="stat"><span>Confiança</span><b id="trustText">50%</b></div><div class="bar"><div id="trustBar" class="fill"></div></div>
+<div class="stat"><span>Pistas</span><b id="clueText">0/8</b></div>
+<div class="stat"><span>Capítulo</span><b id="chapterText">1</b></div>
+<hr style="border-color:#252a36;border-width:1px 0 0;margin:18px 0">
+<div class="list">
+<button class="btn" onclick="inspectScene()">🔎 Examinar cena</button>
+<button class="btn" onclick="openChat()">💬 Falar com contatos</button>
+<button class="btn" onclick="showTimeline()">🕘 Ver cronologia</button>
+<button class="btn" onclick="saveGame()">💾 Salvar investigação</button>
+</div>
+<p style="color:#6f7787;font-size:11px;line-height:1.5">Dica: algumas pistas só aparecem depois de certas conversas. Suas escolhas alteram o final.</p>
+</div>
+</div>
+</div></section>
+
+<section id="ending" class="screen"><div class="hero"><div class="heroCard"><div class="kicker">INVESTIGAÇÃO ENCERRADA</div><div class="title" id="endingTitle"></div><p class="subtitle" id="endingText"></p><div class="actions"><button class="btn primary" onclick="location.reload()">JOGAR NOVAMENTE</button></div></div></div></section>
+
+<div id="modal" class="modal"><div class="modalBox"><div id="modalContent"></div><div class="actions" style="justify-content:flex-end"><button class="btn" onclick="closeModal()">FECHAR</button></div></div></div>
+<div id="toast" class="toast"></div>
+<footer>THE LAST MESSAGE • protótipo narrativo • áudio procedural • imagens vetoriais originais</footer>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const S={
+ started:false,chapter:1,trust:50,clues:new Set(),flags:{},messages:[],
+ currentScene:'apartment', audio:null
+};
+const clues={
+ photo:{icon:'📷',title:'Fotografia rasgada',desc:'Uma foto de Noah diante de um prédio abandonado.',need:0,scene:'apartment',
+ svg:`<svg viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x2="0" y2="1"><stop stop-color="#151a28"/><stop offset="1" stop-color="#05060a"/></linearGradient></defs><rect width="900" height="520" fill="url(#g)"/><rect x="0" y="360" width="900" height="160" fill="#0b0d12"/><rect x="210" y="90" width="480" height="300" rx="4" fill="#202533"/><rect x="260" y="135" width="90" height="210" fill="#0b0e16"/><rect x="380" y="135" width="90" height="210" fill="#0b0e16"/><rect x="500" y="135" width="90" height="210" fill="#0b0e16"/><circle cx="450" cy="285" r="55" fill="#72798a"/><circle cx="432" cy="270" r="8" fill="#111"/><circle cx="468" cy="270" r="8" fill="#111"/><path d="M425 305 Q450 322 475 305" stroke="#111" stroke-width="6" fill="none"/><path d="M80 380 L150 325 215 380 M680 380 L760 320 840 380" stroke="#303747" stroke-width="4" fill="none"/></svg>`},
+ audio:{icon:'🎧',title:'Áudio — 23:17',desc:'Uma gravação curta contém três palavras e um ruído metálico.',need:1,scene:'street',svg:null},
+ receipt:{icon:'🧾',title:'Recibo do Terminal Norte',desc:'Compra registrada às 23:42, depois do horário que Noah disse estar em casa.',need:1,scene:'station',
+svg:`<svg viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg"><rect width="900" height="520" fill="#171a20"/><rect x="285" y="35" width="330" height="450" rx="5" fill="#ddd8c9"/><text x="450" y="85" text-anchor="middle" font-size="28" font-family="monospace" fill="#222">TERMINAL NORTE</text><text x="330" y="135" font-size="20" font-family="monospace" fill="#222">23:42:18</text><text x="330" y="180" font-size="18" font-family="monospace" fill="#222">CAFÉ + PASSAGEM</text><text x="330" y="225" font-size="18" font-family="monospace" fill="#222">BOX 17-B</text><line x1="330" y1="255" x2="570" y2="255" stroke="#555"/><text x="450" y="310" text-anchor="middle" font-size="34" font-family="monospace" fill="#222">04 17 09</text><text x="450" y="380" text-anchor="middle" font-size="14" font-family="monospace" fill="#444">NÃO JOGUE FORA</text></svg>`},
+ key:{icon:'🔑',title:'Chave 17-B',desc:'Uma chave pequena marcada com o número 17-B.',need:2,scene:'station',
+svg:`<svg viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="k"><stop stop-color="#777"/><stop offset=".55" stop-color="#333"/><stop offset="1" stop-color="#090a0d"/></radialGradient></defs><rect width="900" height="520" fill="url(#k)"/><circle cx="430" cy="260" r="88" fill="none" stroke="#b5a56c" stroke-width="22"/><path d="M505 260 L740 260 L740 220 L790 220 L790 300 L755 300 L755 280 L705 280 L705 315 L660 315 L660 280 L505 280Z" fill="#b5a56c"/><text x="450" y="430" text-anchor="middle" font-size="32" font-family="monospace" fill="#d8c788">17-B</text></svg>`},
+room:{icon:'🚪',title:'Sala 17-B',desc:'Uma sala de serviço escondida atrás da plataforma.',need:3,scene:'room',
+svg:`<svg viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg"><rect width="900" height="520" fill="#08090d"/><rect x="130" y="60" width="640" height="390" fill="#151923"/><rect x="320" y="85" width="260" height="365" fill="#080a0e" stroke="#8b6b4b" stroke-width="10"/><circle cx="535" cy="270" r="9" fill="#d4b56b"/><path d="M190 130 L280 130 M190 155 L300 155" stroke="#3c4352" stroke-width="7"/><rect x="665" y="130" width="60" height="240" fill="#1e2430"/><circle cx="695" cy="165" r="8" fill="#bd4040"/><text x="450" y="485" text-anchor="middle" fill="#9fa7b7" font-size="18">17-B • ACESSO RESTRITO</text></svg>`},
+code:{icon:'🧩',title:'Código incompleto',desc:'04 — 17 — 09. Parece uma sequência, não uma senha comum.',need:3,scene:'room',svg:null},
+video:{icon:'📼',title:'Quadro de vigilância',desc:'Um frame mostra uma pessoa deixando a plataforma às 23:49.',need:4,scene:'station',svg:null},
+final:{icon:'📁',title:'Arquivo “NOAH_FINAL”',desc:'O arquivo revela que alguém vinha apagando registros.',need:5,scene:'room',svg:null}
+};
+
+function startGame(){S.started=true;document.querySelector('#title').classList.remove('active');$('game').classList.add('active');playTone(440,.08);render();saveGame(true)}
+function showHelp(){modal(`<h2>Como jogar</h2><p>Explore a cena, abra evidências e converse com os contatos. Algumas pistas são desbloqueadas por escolhas.</p><p>Você pode salvar a investigação a qualquer momento. O final depende das pistas e da confiança.</p>`)}
+function tab(name,el){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));el.classList.add('on');$('evidencePanel').style.display=name==='evidence'?'block':'none';$('chatPanel').style.display=name==='chat'?'block':'none';$('timelinePanel').style.display=name==='timeline'?'block':'none'; if(name==='chat')renderChat();if(name==='timeline')renderTimeline()}
+function render(){
+$('trustText').textContent=S.trust+'%';$('trustBar').style.width=S.trust+'%';$('clueText').textContent=S.clues.size+'/8';$('chapterText').textContent=S.chapter;$('saveStatus').textContent='AUTO-SAVE • '+Math.round(S.clues.size/8*100)+'%';
+renderEvidence();renderScene();
+}
+function renderScene(){
+let c=clues.photo.svg;
+if(S.currentScene==='station')c=clues.receipt.svg;
+if(S.currentScene==='room')c=clues.room.svg;
+if(!c)c=`<svg viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg"><rect width="900" height="520" fill="#080a0f"/><circle cx="450" cy="260" r="170" fill="#111622" stroke="#33394a"/><path d="M330 280 Q450 130 570 280" fill="none" stroke="#7e8799" stroke-width="12"/><circle cx="390" cy="250" r="14" fill="#8f63ff"/><circle cx="510" cy="250" r="14" fill="#8f63ff"/><text x="450" y="360" text-anchor="middle" fill="#9da5b5" font-size="22">SINAL INTERMITENTE</text></svg>`;
+$('scene').innerHTML=c+`<div class="sceneLabel">${S.currentScene.toUpperCase()} • 23:${S.chapter===1?'17':'49'}</div>`;
+}
+function renderEvidence(){
+$('evidencePanel').innerHTML='<div class="list">'+Object.entries(clues).map(([id,c])=>{
+let unlocked=S.clues.has(id)||c.need<=S.clues.size;
+return `<div class="clue ${unlocked?'':'lock'}" onclick="${unlocked?`openClue('${id}')`:''}"><div class="icon">${unlocked?c.icon:'🔒'}</div><div><b>${unlocked?c.title:'Evidência bloqueada'}</b><div style="font-size:12px;color:#858d9d">${unlocked?c.desc:'Colete mais pistas para desbloquear.'}</div></div></div>`}).join('')+'</div>';
+}
+function openClue(id){
+const c=clues[id];S.clues.add(id);if(c.scene)S.currentScene=c.scene;
+if(id==='audio'){playSequence();toast('Áudio reproduzido: “não confie... terminal... 17-B”')}
+if(id==='video'){toast('Frame analisado: horário 23:49')}
+if(id==='final'){S.chapter=3;toast('Arquivo restaurado. A verdade está próxima.')}
+render();saveGame();
+modal(`<div class="evidenceImg">${c.svg||`<div style="padding:55px;text-align:center;font-size:60px;background:#121621">${c.icon}</div>`}</div><h2>${c.title}</h2><p>${c.desc}</p><p style="color:#8e96a6">Evidência adicionada à investigação.</p>`);
+}
+function inspectScene(){
+if(S.currentScene==='apartment'&&!S.clues.has('photo')){S.clues.add('photo');toast('Você encontrou uma fotografia escondida.');}
+else if(S.currentScene==='station'&&!S.clues.has('receipt')){S.clues.add('receipt');toast('Você encontrou um recibo amassado.');}
+else if(S.currentScene==='room'&&!S.clues.has('code')){S.clues.add('code');toast('Há um código escrito atrás da porta.');}
+else if(!S.clues.has('video')){S.clues.add('video');toast('Uma câmera ainda possui um frame salvo.');}
+else if(!S.clues.has('final')){S.clues.add('final');toast('Um arquivo oculto foi recuperado.');}
+render();saveGame();
+}
+function openChat(){tab('chat',document.querySelectorAll('.tab')[1])}
+function renderChat(){
+$('chatPanel').innerHTML=`<div class="chat" id="chat"><div class="bubble them"><b>LIA</b><br>Você recebeu a mensagem de Noah também?</div><div class="bubble me">Recebi. Diziam para não confiar em ninguém.</div><div class="bubble them">Então precisamos descobrir por que ele citou o Terminal Norte.</div></div><div class="choices">
+<button class="choice" onclick="choice('direct')">“O que você está escondendo, Lia?”</button>
+<button class="choice" onclick="choice('trust')">“Quero confiar em você. Me conte tudo.”</button>
+<button class="choice" onclick="choice('evidence')">“Tenho uma pista. O que significa 17-B?”</button>
+</div>`;
+}
+function choice(x){
+if(x==='direct'){S.trust-=12;S.messages.push('Você pressionou Lia.');addMsg('LIA','Eu sabia que você perguntaria. Noah estava investigando alguém dentro do terminal.');S.clues.add('audio');S.chapter=2;}
+if(x==='trust'){S.trust+=14;S.messages.push('Você confiou em Lia.');addMsg('LIA','Ele deixou uma gravação comigo. Disse que, se sumisse, eu deveria entregar a você.');S.clues.add('audio');S.chapter=2;}
+if(x==='evidence'){S.trust+=4;S.messages.push('Você revelou a pista 17-B.');addMsg('LIA','17-B não é uma sala comum. É onde guardavam arquivos antigos.');S.clues.add('key');S.currentScene='station';S.chapter=2;}
+render();saveGame();
+}
+function addMsg(name,text){const c=$('chat');if(c){c.innerHTML+=`<div class="bubble them"><b>${name}</b><br>${text}</div>`;c.scrollTop=c.scrollHeight}}
+function renderTimeline(){
+$('timelinePanel').innerHTML=`<div class="timeline">
+<div class="event"><b>22:58</b><br><span style="color:#8b93a2">Noah envia a última mensagem.</span></div>
+<div class="event"><b>23:17</b><br><span style="color:#8b93a2">Gravação de áudio registrada.</span></div>
+<div class="event"><b>23:42</b><br><span style="color:#8b93a2">Recibo do Terminal Norte.</span></div>
+<div class="event"><b>23:49</b><br><span style="color:#8b93a2">Câmera registra uma saída.</span></div>
+<div class="event"><b>00:03</b><br><span style="color:#8b93a2">Arquivo “NOAH_FINAL” é modificado.</span></div></div>`;
+}
+function showTimeline(){tab('timeline',document.querySelectorAll('.tab')[2])}
+function modal(html){$('modalContent').innerHTML=html;$('modal').classList.add('show')}
+function closeModal(){$('modal').classList.remove('show')}
+function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2400)}
+function saveGame(silent=false){
+const data={chapter:S.chapter,trust:S.trust,clues:[...S.clues],flags:S.flags,currentScene:S.currentScene,messages:S.messages};
+localStorage.setItem('tlm_save',JSON.stringify(data));if(!silent)toast('Investigação salva.');$('saveStatus').textContent='SALVO • '+Math.round(S.clues.size/8*100)+'%';
+}
+function loadGame(){
+const d=JSON.parse(localStorage.getItem('tlm_save')||'null');if(!d){toast('Nenhum salvamento encontrado.');return}
+S.started=true;S.chapter=d.chapter;S.trust=d.trust;S.clues=new Set(d.clues);S.flags=d.flags||{};S.currentScene=d.currentScene||'apartment';S.messages=d.messages||[];
+$('title').classList.remove('active');$('game').classList.add('active');render();toast('Investigação carregada.');
+}
+function finish(){
+let title,text;
+if(S.clues.size>=8 && S.trust>=65){title='A VERDADE';text='Você conectou todas as evidências. Noah estava tentando expor a pessoa que manipulava os registros do terminal — e conseguiu deixar uma cópia da prova antes de desaparecer.'}
+else if(S.trust<30){title='FALSA PISTA';text='Você seguiu uma informação plantada e perdeu a trilha principal. Algumas perguntas continuam sem resposta.'}
+else {title='ARQUIVO INCOMPLETO';text='Você descobriu parte da verdade, mas ainda faltam evidências para explicar o desaparecimento de Noah.'}
+$('game').classList.remove('active');$('ending').classList.add('active');$('endingTitle').textContent=title;$('endingText').textContent=text;
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();if(e.key===' '&&S.started){e.preventDefault();playTone(180,.04)}});
+function initAudio(){
+if(S.audio)return;S.audio=new (window.AudioContext||window.webkitAudioContext)();
+}
+function playTone(freq,dur=.1,type='sine'){
+try{initAudio();const o=S.audio.createOscillator(),g=S.audio.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(.0001,S.audio.currentTime);g.gain.exponentialRampToValueAtTime(.12,S.audio.currentTime+.01);g.gain.exponentialRampToValueAtTime(.0001,S.audio.currentTime+dur);o.connect(g).connect(S.audio.destination);o.start();o.stop(S.audio.currentTime+dur+.02)}catch(e){}
+}
+function playSequence(){[220,196,165,130].forEach((f,i)=>setTimeout(()=>playTone(f,.16,'triangle'),i*180))}
+document.addEventListener('click',()=>{try{initAudio()}catch(e){}},{once:true});
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(() => console.log("The Last Message: modo offline ativado"))
+      .catch(err => console.log("Service Worker:", err));
+  });
+}
+</script>
+
+</body>
+</html>
